@@ -1,5 +1,8 @@
+require("dotenv").config();
+
 const secret = process.env.SECRET;
 const prefix = process.env.PREFIX;
+
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
@@ -11,23 +14,10 @@ client.on('message', message => {
 
     if(message.content.startsWith("poke")) {
 
-        let member = message.mentions.members.first();
-
-        if(member.presence.status != "online") {
-            message.channel.send(`${member.displayName} is not online`);
-        }
+        const member = message.mentions.members.first();
 
         if(message.author.username == member.displayName) {
             message.channel.send("No need to poke yourself!");
-            return;
-        }
-
-        message.channel.send(`${message.author.username} poked ${member.displayName}`);
-
-        member.send(`${message.author.username} has poked you!`);
-
-        if(member.voice.channel.full) {
-            message.channel.send(`${member.displayName} only poked by private message, it's voice channel is full`);
             return;
         }
 
@@ -40,6 +30,17 @@ client.on('message', message => {
             });
 
         });
+
+        if(!member.voice.channel.full) {
+            message.channel.send(`${message.author.username} poked ${member.displayName}`);
+        }
+
+        if(member.voice.channel.full) {
+            message.channel.send(`${member.displayName} only poked by private message, it's voice channel is full`);
+            return;
+        }
+
+        member.send(`${message.author.username} has poked you!`);
 
     }
 
